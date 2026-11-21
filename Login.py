@@ -1,12 +1,12 @@
-import sqlite3
-
-DB_PASSWORD = "admin123"
+import sqlite3, hashlib
 
 def login(username, password):
     conn = sqlite3.connect("users.db")
     cursor = conn.cursor()
-    query = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'"
-    cursor.execute(query)
+    hashed = hashlib.sha256(password.encode()).hexdigest()
+    cursor.execute(
+        "SELECT * FROM users WHERE username = ? AND password_hash = ?",
+        (username, hashed))
     return cursor.fetchone() is not None
 
 user = input("Username: ")
